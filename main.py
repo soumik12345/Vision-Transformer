@@ -1,11 +1,11 @@
 import tensorflow as tf
-from image_transformer import KerasDataset, ImageTransformer
+from vision_transformer import KerasDataset, VisionTransformer
 
 
 train_dataset, test_dataset = KerasDataset(tf.keras.datasets.cifar10).get_datasets()
 strategy = tf.distribute.MirroredStrategy() if len(tf.config.list_physical_devices('GPU')) > 1 else tf.distribute.OneDeviceStrategy("GPU:0")
 with strategy.scope():
-    model = ImageTransformer(
+    model = VisionTransformer(
         image_size=32, patch_size=4, n_classes=10, batch_size=64,
         dimension=64, depth=3, heads=4, mlp_dimension=128
     )
