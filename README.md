@@ -5,4 +5,4 @@ TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE](https://openreview.net/pdf?id=YicbF
 
 ![](./assets/model.png)
 
-GELU implementation has been taken from [EchoAI](https://github.com/digantamisra98/Echo/).
+GELU implementation has been taken from the latest master branch of [EchoAI](https://github.com/digantamisra98/Echo/).
