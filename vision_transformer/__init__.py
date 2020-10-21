@@ -1,2 +1,2 @@
-from .dataset import KerasDataset
-from .transformer import ImageTransformer as VisionTransformer
+from .dataloader import DataLoader
+from .model import VisionTransformer
