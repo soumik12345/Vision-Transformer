@@ -1,6 +1,6 @@
+from typing import List
 import tensorflow as tf
 from datetime import datetime
-from typing import List, Tuple
 import tensorflow_addons as tfa
 from .dataloaders import TFDSLoader
 from .model import VisionTransformer
@@ -12,7 +12,7 @@ class Trainer:
         self.train_dataset = None
         self.test_dataset = None
         self.optimizer = None
-        self.model = None
+        self.model: tf.keras.Model = None
         self.training_history = None
         self.callbacks = []
 
@@ -24,18 +24,17 @@ class Trainer:
         )
 
     def build_model(
-            self, input_shape: Tuple[int, int, int], image_size: int, rotate_factor: float, zoom_factor: float,
+            self, input_shape: List[int], image_size: int, rotate_factor: float, zoom_factor: float,
             patch_size: int, n_transformer_blocks: int, num_heads: int,
             projection_dimension: int, epsilon: float, attention_dropout: float, mlp_dropout: float,
             hidden_units: List[int], n_classes: int, representation_dropout_rate: float):
         self.model = VisionTransformer(
-            image_size=image_size, rotate_factor=rotate_factor, zoom_factor=zoom_factor,
-            patch_size=patch_size, n_transformer_blocks=n_transformer_blocks,  num_heads=num_heads,
+            input_shape=input_shape, image_size=image_size, rotate_factor=rotate_factor, zoom_factor=zoom_factor,
+            patch_size=patch_size, n_transformer_layers=n_transformer_blocks,  num_heads=num_heads,
             projection_dimension=projection_dimension, epsilon=epsilon, attention_dropout=attention_dropout,
-            mlp_dropout=mlp_dropout, hidden_units=hidden_units, n_classes=n_classes,
-            representation_dropout_rate=representation_dropout_rate
+            mlp_dropout=mlp_dropout, hidden_units=hidden_units, n_classes=n_classes, projection_dim=projection_dimension,
+            representation_dropout_rate=representation_dropout_rate, num_patches=(image_size // patch_size) ** 2
         )
-        self.model.build(input_shape=input_shape)
 
     def compile(self, learning_rate: float, weight_decay: float):
         self.optimizer = tfa.optimizers.AdamW(
@@ -49,6 +48,9 @@ class Trainer:
                 tf.keras.metrics.SparseTopKCategoricalAccuracy(5, name="top-5-accuracy"),
             ],
         )
+
+    def summarize(self):
+        self.model.summary()
 
     def _checkpoint_callback(self, checkpoint_dir: str):
         self.callbacks.append(

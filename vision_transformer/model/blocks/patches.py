@@ -35,7 +35,7 @@ class PatchMaker(tf.keras.layers.Layer):
 
 class PatchEmbedding(tf.keras.layers.Layer):
 
-    def __init__(self, num_patches, projection_dim):
+    def __init__(self, num_patches: int, projection_dim: int):
         super(PatchEmbedding, self).__init__()
         self.num_patches = num_patches
         self.projection = tf.keras.layers.Dense(units=projection_dim)
