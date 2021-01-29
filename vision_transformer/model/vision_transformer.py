@@ -11,9 +11,10 @@ from .blocks import (
 class VisionTransformer(tf.keras.Model):
 
     def __init__(
-            self, image_size: int, rotate_factor: float, zoom_factor: float, patch_size: int, n_transformer_blocks: int,
-            num_heads: int, projection_dimension: int, epsilon: float, attention_dropout: float, mlp_dropout: float,
-            hidden_units: List[int], n_classes: int, representation_dropout_rate: float, mlp_dropout_rate: float):
+            self, image_size: int, rotate_factor: float, zoom_factor: float,
+            patch_size: int, n_transformer_blocks: int, num_heads: int,
+            projection_dimension: int, epsilon: float, attention_dropout: float, mlp_dropout: float,
+            hidden_units: List[int], n_classes: int, representation_dropout_rate: float):
         super(VisionTransformer, self).__init__()
         self.augment = Augmentations(
             image_size=image_size,
@@ -34,7 +35,7 @@ class VisionTransformer(tf.keras.Model):
             )
         self.classify = ClassificationBlock(
             epsilon=epsilon, hidden_units=hidden_units, n_classes=n_classes,
-            representation_dropout_rate=representation_dropout_rate, mlp_dropout_rate=mlp_dropout_rate
+            representation_dropout_rate=representation_dropout_rate, mlp_dropout_rate=mlp_dropout
         )
 
     def call(self, inputs, *args, **kwargs):

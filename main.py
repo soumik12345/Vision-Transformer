@@ -1,18 +1,14 @@
-import tensorflow as tf
-from vision_transformer import KerasDataset, VisionTransformer
+from vision_transformer import Trainer
 
 
-train_dataset, test_dataset = KerasDataset(tf.keras.datasets.cifar10).get_datasets()
-strategy = tf.distribute.MirroredStrategy() if len(tf.config.list_physical_devices('GPU')) > 1 else tf.distribute.OneDeviceStrategy("GPU:0")
-with strategy.scope():
-    model = VisionTransformer(
-        image_size=32, patch_size=4, n_classes=10, batch_size=64,
-        dimension=64, depth=3, heads=4, mlp_dimension=128
-    )
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    cross_entropy_loss = tf.keras.losses.SparseCategoricalCrossentropy(
-        from_logits=True, reduction=tf.keras.losses.Reduction.NONE
-    )
-    train_distributed_dataset = strategy.experimental_distribute_dataset(train_dataset)
-    model.compile(optimizer=optimizer, loss_fn=cross_entropy_loss)
-history = model.fit(train_dataset, batch_size=64, epochs=10)
+trainer = Trainer()
+trainer.build_dataset(
+    dataset_name='cifar100', buffer_size=1024, batch_size=16
+)
+trainer.build_model(
+    image_size=72, rotate_factor=0.2, zoom_factor=0.2, patch_size=6, n_transformer_blocks=8,
+    num_heads=4, projection_dimension=64, epsilon=1e-6, attention_dropout=0.1, mlp_dropout=0.1,
+    hidden_units=[2048, 1024], n_classes=100, representation_dropout_rate=0.5
+)
+trainer.compile(learning_rate=1e-3, weight_decay=1e-3)
+trainer.train(epochs=100, checkpoint_dir='./checkpoints/')
