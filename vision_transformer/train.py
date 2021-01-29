@@ -1,20 +1,23 @@
+import wandb
 from typing import List
 import tensorflow as tf
 from datetime import datetime
 import tensorflow_addons as tfa
 from .dataloaders import TFDSLoader
 from .model import VisionTransformer
+from wandb.keras import WandbCallback
 
 
 class Trainer:
 
-    def __init__(self):
+    def __init__(self, project_name: str, experiment_name: str):
         self.train_dataset = None
         self.test_dataset = None
         self.optimizer = None
         self.model: tf.keras.Model = None
         self.training_history = None
         self.callbacks = []
+        wandb.init(project=project_name, name=experiment_name)
 
     def build_dataset(self, dataset_name: str, buffer_size: int, batch_size: int):
         loader = TFDSLoader(disable_progress_bar=True)
@@ -45,7 +48,8 @@ class Trainer:
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[
                 tf.keras.metrics.SparseCategoricalAccuracy(name="accuracy"),
-                tf.keras.metrics.SparseTopKCategoricalAccuracy(5, name="top-5-accuracy"),
+                tf.keras.metrics.SparseTopKCategoricalAccuracy(3, name="top-3-accuracy"),
+                tf.keras.metrics.SparseTopKCategoricalAccuracy(5, name="top-5-accuracy")
             ],
         )
 
@@ -68,6 +72,7 @@ class Trainer:
                 update_freq=50, write_images=True
             )
         )
+        self.callbacks.append(WandbCallback())
 
     def train(self, epochs, checkpoint_dir):
         self._checkpoint_callback(checkpoint_dir=checkpoint_dir)
