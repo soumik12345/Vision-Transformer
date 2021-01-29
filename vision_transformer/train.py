@@ -1,3 +1,4 @@
+import os
 import wandb
 from typing import List
 import tensorflow as tf
@@ -10,13 +11,14 @@ from wandb.keras import WandbCallback
 
 class Trainer:
 
-    def __init__(self, project_name: str, experiment_name: str):
+    def __init__(self, project_name: str, experiment_name: str, wandb_api_key: str):
         self.train_dataset = None
         self.test_dataset = None
         self.optimizer = None
         self.model: tf.keras.Model = None
         self.training_history = None
         self.callbacks = []
+        os.environ['WANDB_API_KEY'] = wandb_api_key
         wandb.init(
             project=project_name,
             name=experiment_name,
