@@ -1,6 +1,6 @@
-from typing import List
 import tensorflow as tf
 from datetime import datetime
+from typing import List, Tuple
 import tensorflow_addons as tfa
 from .dataloaders import TFDSLoader
 from .model import VisionTransformer
@@ -24,7 +24,7 @@ class Trainer:
         )
 
     def build_model(
-            self, image_size: int, rotate_factor: float, zoom_factor: float,
+            self, input_shape: Tuple[int, int, int], image_size: int, rotate_factor: float, zoom_factor: float,
             patch_size: int, n_transformer_blocks: int, num_heads: int,
             projection_dimension: int, epsilon: float, attention_dropout: float, mlp_dropout: float,
             hidden_units: List[int], n_classes: int, representation_dropout_rate: float):
@@ -35,7 +35,7 @@ class Trainer:
             mlp_dropout=mlp_dropout, hidden_units=hidden_units, n_classes=n_classes,
             representation_dropout_rate=representation_dropout_rate
         )
-        self.model.build(input_shape=image_size)
+        self.model.build(input_shape=input_shape)
 
     def compile(self, learning_rate: float, weight_decay: float):
         self.optimizer = tfa.optimizers.AdamW(
