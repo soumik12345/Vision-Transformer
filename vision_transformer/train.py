@@ -17,7 +17,11 @@ class Trainer:
         self.model: tf.keras.Model = None
         self.training_history = None
         self.callbacks = []
-        wandb.init(project=project_name, name=experiment_name)
+        wandb.init(
+            project=project_name,
+            name=experiment_name,
+            sync_tensorboard=True
+        )
 
     def build_dataset(self, dataset_name: str, buffer_size: int, batch_size: int):
         loader = TFDSLoader(disable_progress_bar=True)
